@@ -109,3 +109,25 @@ JOIN compo  ON bon.id = compo.id_bon
 JOIN article  ON compo.id_art = article.id
 GROUP BY YEAR(bon.date_cmde), MONTH(bon.date_cmde)
 ORDER BY YEAR(bon.date_cmde), MONTH(bon.date_cmde);
+
+-- c
+SELECT *
+FROM bon 
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM compo 
+    WHERE bon.id = compo.id_bon
+);
+
+-- d 
+SELECT fournisseur.nom AS fournisseur, AVG(prix_total) AS prix_moyen
+FROM (
+    SELECT BON.id AS id_bon, SUM(ARTICLE.prix * COMPO.qte) AS prix_total
+    FROM BON
+    JOIN COMPO ON BON.id = COMPO.id_bon
+    JOIN ARTICLE ON COMPO.id_art = ARTICLE.id
+    GROUP BY BON.id
+) AS prix_bon
+JOIN BON ON prix_bon.id_bon = BON.id
+JOIN FOURNISSEUR ON BON.id_fou = FOURNISSEUR.id
+GROUP BY FOURNISSEUR.nom;
